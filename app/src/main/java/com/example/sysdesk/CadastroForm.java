@@ -8,7 +8,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class CadastroActivity extends AppCompatActivity {
+public class CadastroForm extends AppCompatActivity {
 
     private EditText etNome, etEmail, etSenha, etContato;
     private Button btnCadastrar;
@@ -34,9 +34,9 @@ public class CadastroActivity extends AppCompatActivity {
 
                 // Validação simples
                 if(nome.isEmpty() || email.isEmpty() || senha.isEmpty() || contato.isEmpty()) {
-                    Toast.makeText(CadastroActivity.this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CadastroForm.this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(CadastroActivity.this, "Cadastro realizado com sucesso", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CadastroForm.this, "Cadastro realizado com sucesso", Toast.LENGTH_SHORT).show();
                     finish();
                 }
             }
