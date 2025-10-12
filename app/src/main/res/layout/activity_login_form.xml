@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--  Scroll (rolagem) da tela  -->
+<androidx.core.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,6 +16,7 @@
     android:background="@color/white"
     tools:context=".LoginForm">
 
+<!--Logo-->
     <ImageView
         android:id="@+id/logo"
         android:layout_width="wrap_content"
@@ -16,7 +25,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
+<!--Container-->
     <View
         android:id="@+id/containerComponents"
         style="@style/ContainerComponents"
@@ -24,6 +33,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/logo" />
 
+<!--Logo Login-->
     <ImageView
         android:id="@+id/account_logo"
         android:layout_width="50dp"
@@ -34,25 +44,34 @@
         app:layout_constraintTop_toTopOf="@id/containerComponents"
         android:layout_marginTop="15dp"/>
 
+<!--Campo de Email-->
     <EditText
         android:id="@+id/edit_email"
         style="@style/Edit_Text"
-        android:hint="E-mail"
+        android:layout_marginTop="12dp"
         android:drawableRight="@drawable/ic_email"
-        app:layout_constraintStart_toStartOf="@id/containerComponents"
+        android:drawablePadding="5dp"
+        android:hint="E-mail"
+        android:inputType="textEmailAddress"
+        android:maxLength="50"
         app:layout_constraintEnd_toEndOf="@id/containerComponents"
-        app:layout_constraintTop_toBottomOf="@id/account_logo"/>
+        app:layout_constraintStart_toStartOf="@id/containerComponents"
+        app:layout_constraintTop_toBottomOf="@id/account_logo" />
 
+<!--Campo de Senha-->
     <EditText
         android:id="@+id/edit_senha"
         style="@style/Edit_Text"
         android:hint="Senha"
-
         android:drawableRight="@drawable/ic_eye"
+        android:drawablePadding="5dp"
+        android:inputType="numberPassword"
+        android:maxLength="25"
         app:layout_constraintStart_toStartOf="@id/containerComponents"
         app:layout_constraintEnd_toEndOf="@id/containerComponents"
         app:layout_constraintTop_toBottomOf="@id/edit_email"/>
 
+<!--Botão de Login-->
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/login_button"
         style="@style/Button"
@@ -61,6 +80,7 @@
         app:layout_constraintTop_toBottomOf="@id/edit_senha"
         android:text="@string/login" />
 
+<!--Barra de Progresso/ Validação do Banco-->
     <ProgressBar
         android:id="@+id/progressbar"
         android:layout_width="wrap_content"
@@ -68,8 +88,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/containerComponents"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="20dp"
+        android:visibility="invisible"/>
 
+<!--Redirecionamento para Tela de cadastro-->
     <TextView
         android:id="@+id/text_tela_cadastro"
         android:layout_width="wrap_content"
@@ -90,3 +112,4 @@
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

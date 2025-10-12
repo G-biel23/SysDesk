@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--  Scroll (rolagem) da tela  -->
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:backgroundTint="#000000"
+    android:fillViewport="true"
+    android:foregroundTint="#000000">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:foregroundTint="#000000"
+        tools:context=".CadastroForm">
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/logo"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/containerComponents"
+            style="@style/ContainerComponents"
+            android:layout_height="470dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/logo" />
+
+        <ImageView
+            android:id="@+id/cadastro_logo"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="15dp"
+            android:src="@drawable/ic_add_account"
+            app:layout_constraintEnd_toEndOf="@id/containerComponents"
+            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            app:layout_constraintTop_toTopOf="@id/containerComponents" />
+
+        <!--Campo de Nome-->
+        <EditText
+            android:id="@+id/edit_nomeCadastro"
+            style="@style/Edit_Text"
+            android:hint="Nome"
+            android:inputType="textPersonName"
+            android:maxLength="100"
+            app:layout_constraintEnd_toEndOf="@id/containerComponents"
+            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            app:layout_constraintTop_toBottomOf="@id/cadastro_logo" />
+
+        <!--Campo de cadastrar email-->
+        <EditText
+            android:id="@+id/edit_emailCadastro"
+            style="@style/Edit_Text"
+            android:drawableRight="@drawable/ic_email"
+            android:drawablePadding="5dp"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:maxLength="50"
+            app:layout_constraintEnd_toEndOf="@id/containerComponents"
+            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            app:layout_constraintTop_toBottomOf="@id/edit_nomeCadastro" />
+
+<!--Campo de cadastrar senha-->
+        <EditText
+            android:id="@+id/edit_senhaCadastro"
+            style="@style/Edit_Text"
+            android:drawableRight="@drawable/ic_eye"
+            android:drawablePadding="5dp"
+            android:hint="Senha"
+            android:inputType="numberPassword"
+            android:maxLength="25"
+            app:layout_constraintEnd_toEndOf="@id/containerComponents"
+            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            app:layout_constraintTop_toBottomOf="@id/edit_emailCadastro" />
+
+<!--Campo de cadastrar contato-->
+        <EditText
+            android:id="@+id/edit_contato"
+            style="@style/Edit_Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableRight="@drawable/ic_contato"
+            android:drawablePadding="5dp"
+            android:hint="Contato"
+            android:inputType="phone"
+            android:maxLength="15"
+            app:layout_constraintEnd_toEndOf="@id/containerComponents"
+            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            app:layout_constraintTop_toBottomOf="@id/edit_senhaCadastro" />
+
+
+        <TextView
+            android:id="@+id/selection_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            app:layout_constraintEnd_toEndOf="@id/containerComponents"
+            android:layout_marginTop="15dp"
+            app:layout_constraintTop_toBottomOf="@id/edit_contato"
+            android:text="@string/selecione_tipo"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="15dp"/>
+
+        <Spinner
+            android:id="@+id/spinner_tipo"
+            style="@style/Spinner"
+            app:layout_constraintEnd_toEndOf="@id/containerComponents"
+            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            app:layout_constraintTop_toBottomOf="@id/selection_type" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/login_button"
+            style="@style/Button"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            app:layout_constraintEnd_toEndOf="@id/containerComponents"
+            app:layout_constraintTop_toBottomOf="@id/spinner_tipo"
+            android:text="@string/cadastro" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>
