@@ -1,59 +1,61 @@
 package com.example.sysdesk;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextWatcher;
-import android.text.Editable;
-
-
-
-
+import android.view.MotionEvent;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
+
+import com.example.sysdesk.api.SysDeskApi;
+import com.example.sysdesk.model.Usuario;
+import com.example.sysdesk.network.RetrofitClient;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CadastroForm extends AppCompatActivity {
 
-    private Spinner spinnerTipo;
-    private boolean isSpinnerTouched = false;
-    private EditText editNomeCadastro;
+    private EditText editNomeCadastro, editEmailCadastro, editSenhaCadastro, editContato;
+    private Button btnCadastrar;
+    private SysDeskApi api;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_form);
 
-        spinnerTipo = findViewById(R.id.spinner_tipo);
+        // Inicializa campos e botão
         editNomeCadastro = findViewById(R.id.edit_nomeCadastro);
-        EditText editContato = findViewById(R.id.edit_contato);
+        editEmailCadastro = findViewById(R.id.edit_emailCadastro);
+        editSenhaCadastro = findViewById(R.id.edit_senhaCadastro);
+        editContato = findViewById(R.id.edit_contato);
+        btnCadastrar = findViewById(R.id.cadastro_button);
 
+        // Inicializa API
+        api = RetrofitClient.getRetrofitInstance().create(SysDeskApi.class);
+
+        // Máscara de telefone
         editContato.addTextChangedListener(new TextWatcher() {
             private boolean isUpdating = false;
             private final String mask = "(##) #####-####";
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (isUpdating) {
-                    isUpdating = false;
-                    return;
-                }
+                if (isUpdating) { isUpdating = false; return; }
 
                 String digits = s.toString().replaceAll("[^0-9]", "");
                 StringBuilder masked = new StringBuilder();
                 int i = 0;
-
                 for (char m : mask.toCharArray()) {
                     if (m == '#') {
                         if (i < digits.length()) masked.append(digits.charAt(i++));
@@ -63,21 +65,19 @@ public class CadastroForm extends AppCompatActivity {
                         else break;
                     }
                 }
-
                 isUpdating = true;
                 editContato.setText(masked.toString());
                 editContato.setSelection(masked.length());
             }
-
             @Override
             public void afterTextChanged(Editable s) {}
         });
 
-
-        // Adiciona InputFilter para aceitar apenas letras e espaços
+        // Filtro para aceitar apenas letras e espaços no nome
         InputFilter letrasFilter = new InputFilter() {
             @Override
-            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+            public CharSequence filter(CharSequence source, int start, int end,
+                                       Spanned dest, int dstart, int dend) {
                 for (int i = start; i < end; i++) {
                     if (!Character.isLetter(source.charAt(i)) && !Character.isWhitespace(source.charAt(i))) {
                         return "";
@@ -88,54 +88,76 @@ public class CadastroForm extends AppCompatActivity {
         };
         editNomeCadastro.setFilters(new InputFilter[]{letrasFilter, new InputFilter.LengthFilter(100)});
 
-        // Opções do Spinner
-        String[] tipos = {"Cliente", "Técnico", "Admin"};
-
-
-        // Adapter com layout personalizado
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, tipos) {
+        // Filtro para aceitar apenas letras e números na senha
+        InputFilter senhaFilter = new InputFilter() {
             @Override
-            public View getView(int position, View convertView, android.view.ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                TextView text = (TextView) view;
-                text.setTextColor(ContextCompat.getColor(getApplicationContext(), android.R.color.black));
-                return view;
-            }
-
-            @Override
-            public View getDropDownView(int position, View convertView, android.view.ViewGroup parent) {
-                View view = super.getDropDownView(position, convertView, parent);
-                TextView text = (TextView) view;
-                text.setTextColor(ContextCompat.getColor(getApplicationContext(), android.R.color.black));
-                text.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), android.R.color.white));
-                return view;
+            public CharSequence filter(CharSequence source, int start, int end,
+                                       Spanned dest, int dstart, int dend) {
+                for (int i = start; i < end; i++) {
+                    char c = source.charAt(i);
+                    if (!Character.isLetterOrDigit(c)) return "";
+                }
+                return null;
             }
         };
 
-        spinnerTipo.setAdapter(adapter);
-
-        // Detecta toque do usuário
-        spinnerTipo.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                isSpinnerTouched = true;
+        // 👁 Mostrar/ocultar senha
+        editSenhaCadastro.setOnTouchListener((v, event) -> {
+            final int DRAWABLE_RIGHT = 2;
+            if(event.getAction() == MotionEvent.ACTION_UP) {
+                if(event.getRawX() >= (editSenhaCadastro.getRight() - editSenhaCadastro.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                    if(editSenhaCadastro.getInputType() == (android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
+                        editSenhaCadastro.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                    } else {
+                        editSenhaCadastro.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                    }
+                    editSenhaCadastro.setSelection(editSenhaCadastro.getText().length());
+                    return true;
+                }
             }
             return false;
         });
 
-        // Evento de seleção
-        spinnerTipo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (isSpinnerTouched) {
-                    String tipoSelecionado = parent.getItemAtPosition(position).toString();
-                    Toast.makeText(CadastroForm.this, tipoSelecionado + " selecionado com sucesso!", Toast.LENGTH_SHORT).show();
-                }
+
+        // Botão de cadastro
+        btnCadastrar.setOnClickListener(v -> {
+            String nome = editNomeCadastro.getText().toString().trim();
+            String email = editEmailCadastro.getText().toString().trim();
+            String senha = editSenhaCadastro.getText().toString().trim();
+            String contato = editContato.getText().toString().trim();
+
+            if(nome.isEmpty() || email.isEmpty() || senha.isEmpty() || contato.isEmpty()) {
+                Toast.makeText(CadastroForm.this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
+                return;
             }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // Nenhuma ação necessária
-            }
+            Usuario novoUsuario = new Usuario();
+            novoUsuario.setNome(nome);
+            novoUsuario.setEmail(email);
+            novoUsuario.setSenha(senha);
+            novoUsuario.setContato(contato);
+            novoUsuario.setTipo("cliente"); // Todos os cadastros são clientes
+
+            Call<Usuario> call = api.criarUsuario(novoUsuario);
+            call.enqueue(new Callback<Usuario>() {
+                @Override
+                public void onResponse(Call<Usuario> call, Response<Usuario> response) {
+                    if(response.isSuccessful()) {
+                        Toast.makeText(CadastroForm.this, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show();
+                        // Redireciona para a tela de login
+                        Intent intent = new Intent(CadastroForm.this, LoginForm.class);
+                        startActivity(intent);
+                        finish(); // fecha a tela de cadastro
+                    } else {
+                        Toast.makeText(CadastroForm.this, "Erro no cadastro: " + response.code(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Usuario> call, Throwable t) {
+                    Toast.makeText(CadastroForm.this, "Falha na conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
         });
     }
 }
