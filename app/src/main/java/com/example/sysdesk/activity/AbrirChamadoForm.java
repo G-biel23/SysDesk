@@ -182,7 +182,7 @@ public class AbrirChamadoForm extends AppCompatActivity {
                     atualizarSpinner();
                     criarChamadoNoBackend(criada.getId(), titulo, descricao);
                 } else {
-                    Toast.makeText(AbrirChamadoForm.this, "Erro ao criar categoria", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AbrirChamadoForm.this, "Erro ao criar categoria:" + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -210,7 +210,7 @@ public class AbrirChamadoForm extends AppCompatActivity {
                     Toast.makeText(AbrirChamadoForm.this, "Chamado enviado com sucesso", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    Toast.makeText(AbrirChamadoForm.this, "Erro ao enviar chamado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AbrirChamadoForm.this, "Erro ao enviar chamado:" + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 

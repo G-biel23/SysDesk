@@ -9,6 +9,8 @@ public class RetrofitClient {
 
     private static Retrofit retrofit;
     private static final String BASE_URL = "http://192.168.3.19:8080/";
+
+    // Interceptor para autenticação Basic Auth
     private static final TokenInterceptor tokenInterceptor = new TokenInterceptor();
 
     public static Retrofit getRetrofitInstance() {
@@ -19,6 +21,7 @@ public class RetrofitClient {
 
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(logging)
+                    .addInterceptor(tokenInterceptor) // ADICIONE ISSO
                     .build();
 
             retrofit = new Retrofit.Builder()
@@ -30,6 +33,7 @@ public class RetrofitClient {
         return retrofit;
     }
 
+    // Torna visível para outras classes
     public static void setToken(String token) {
         tokenInterceptor.setToken(token);
     }

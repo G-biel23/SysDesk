@@ -116,13 +116,16 @@ public class LoginForm extends AppCompatActivity {
                     //   GERAR E SALVAR BASIC TOKEN
                     // ===============================
 
+                    // 1️⃣ Criar string email:senha
                     String rawCredentials = usuarioLogin.getEmail() + ":" + usuarioLogin.getSenha();
+
+                    // 2️⃣ Converter para Base64
                     String basicToken = Base64.encodeToString(rawCredentials.getBytes(), Base64.NO_WRAP);
 
-                    // Salvar no Retrofit
+                    // 3️⃣ Salvar no Retrofit (para todas as requisições futuras)
                     RetrofitClient.setToken(basicToken);
 
-                    // Salvar localmente para manter login
+                    // 4️⃣ Salvar localmente (SharedPreferences) para manter login
                     getSharedPreferences("sysdesk_prefs", MODE_PRIVATE)
                             .edit()
                             .putString("TOKEN", basicToken)
@@ -130,7 +133,7 @@ public class LoginForm extends AppCompatActivity {
 
                     Toast.makeText(LoginForm.this, "Bem-vindo, " + usuarioLogado.getNome(), Toast.LENGTH_SHORT).show();
 
-                    // Redirecionamento
+                    // Redirecionamento para tela correta
                     redirecionarPorTipo(usuarioLogado.getTipo());
 
                 } else if (response.code() == 401) {
@@ -146,6 +149,7 @@ public class LoginForm extends AppCompatActivity {
             }
         });
     }
+
 
     private void redirecionarPorTipo(String tipo) {
         Intent intent;
