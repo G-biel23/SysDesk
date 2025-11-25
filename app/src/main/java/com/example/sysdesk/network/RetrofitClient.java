@@ -8,14 +8,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitClient {
 
     private static Retrofit retrofit;
-
-    // ⚠️ Substitua pelo IP e porta da máquina onde sua API está rodando
-    private static final String BASE_URL = "http://192.168.3.19:8080/api/";
+    private static final String BASE_URL = "http://192.168.3.19:8080/";
+    private static final TokenInterceptor tokenInterceptor = new TokenInterceptor();
 
     public static Retrofit getRetrofitInstance() {
         if (retrofit == null) {
 
-            // Interceptor para exibir logs das requisições no Logcat
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
@@ -30,5 +28,13 @@ public class RetrofitClient {
                     .build();
         }
         return retrofit;
+    }
+
+    public static void setToken(String token) {
+        tokenInterceptor.setToken(token);
+    }
+
+    public static void clearToken() {
+        tokenInterceptor.clearToken();
     }
 }

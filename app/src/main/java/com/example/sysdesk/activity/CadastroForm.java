@@ -1,4 +1,4 @@
-package com.example.sysdesk;
+package com.example.sysdesk.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,7 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextWatcher;
+import android.text.InputType;
 import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.sysdesk.R;
 import com.example.sysdesk.api.SysDeskApi;
 import com.example.sysdesk.model.Usuario;
 import com.example.sysdesk.network.RetrofitClient;
@@ -73,7 +75,7 @@ public class CadastroForm extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
 
-        // Filtro para aceitar apenas letras e espaços no nome
+        // Filtro: apenas letras e espaços no nome
         InputFilter letrasFilter = new InputFilter() {
             @Override
             public CharSequence filter(CharSequence source, int start, int end,
@@ -88,7 +90,7 @@ public class CadastroForm extends AppCompatActivity {
         };
         editNomeCadastro.setFilters(new InputFilter[]{letrasFilter, new InputFilter.LengthFilter(100)});
 
-        // Filtro para aceitar apenas letras e números na senha
+        // Filtro: apenas letras e números na senha
         InputFilter senhaFilter = new InputFilter() {
             @Override
             public CharSequence filter(CharSequence source, int start, int end,
@@ -100,16 +102,21 @@ public class CadastroForm extends AppCompatActivity {
                 return null;
             }
         };
+        editSenhaCadastro.setFilters(new InputFilter[]{senhaFilter, new InputFilter.LengthFilter(25)});
 
         // 👁 Mostrar/ocultar senha
         editSenhaCadastro.setOnTouchListener((v, event) -> {
             final int DRAWABLE_RIGHT = 2;
-            if(event.getAction() == MotionEvent.ACTION_UP) {
-                if(event.getRawX() >= (editSenhaCadastro.getRight() - editSenhaCadastro.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                    if(editSenhaCadastro.getInputType() == (android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
-                        editSenhaCadastro.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getRawX() >= (editSenhaCadastro.getRight() -
+                        editSenhaCadastro.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                    if (editSenhaCadastro.getInputType() ==
+                            (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
+                        editSenhaCadastro.setInputType(
+                                InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
                     } else {
-                        editSenhaCadastro.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                        editSenhaCadastro.setInputType(
+                                InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                     }
                     editSenhaCadastro.setSelection(editSenhaCadastro.getText().length());
                     return true;
@@ -118,7 +125,6 @@ public class CadastroForm extends AppCompatActivity {
             return false;
         });
 
-
         // Botão de cadastro
         btnCadastrar.setOnClickListener(v -> {
             String nome = editNomeCadastro.getText().toString().trim();
@@ -126,7 +132,7 @@ public class CadastroForm extends AppCompatActivity {
             String senha = editSenhaCadastro.getText().toString().trim();
             String contato = editContato.getText().toString().trim();
 
-            if(nome.isEmpty() || email.isEmpty() || senha.isEmpty() || contato.isEmpty()) {
+            if (nome.isEmpty() || email.isEmpty() || senha.isEmpty() || contato.isEmpty()) {
                 Toast.makeText(CadastroForm.this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -142,12 +148,52 @@ public class CadastroForm extends AppCompatActivity {
             call.enqueue(new Callback<Usuario>() {
                 @Override
                 public void onResponse(Call<Usuario> call, Response<Usuario> response) {
-                    if(response.isSuccessful()) {
+                    if (response.isSuccessful() && response.body() != null) {
                         Toast.makeText(CadastroForm.this, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show();
-                        // Redireciona para a tela de login
-                        Intent intent = new Intent(CadastroForm.this, LoginForm.class);
-                        startActivity(intent);
-                        finish(); // fecha a tela de cadastro
+
+                        // 🔐 Faz login automático
+                        Usuario usuarioLogin = new Usuario();
+                        usuarioLogin.setEmail(email);
+                        usuarioLogin.setSenha(senha);
+
+                        Call<Usuario> callLogin = api.login(usuarioLogin);
+                        callLogin.enqueue(new Callback<Usuario>() {
+                            @Override
+                            public void onResponse(Call<Usuario> call, Response<Usuario> responseLogin) {
+                                if (responseLogin.isSuccessful() && responseLogin.body() != null) {
+                                    Usuario usuarioLogado = responseLogin.body();
+                                    Toast.makeText(CadastroForm.this, "Bem-vindo, " + usuarioLogado.getNome(), Toast.LENGTH_SHORT).show();
+
+                                    // 🔄 Redireciona conforme o tipo do usuário
+                                    Intent intent;
+                                    switch (usuarioLogado.getTipo().toLowerCase()) {
+                                        case "cliente":
+                                            intent = new Intent(CadastroForm.this, ClienteHomeForm.class);
+                                            break;
+                                        case "tecnico":
+                                            intent = new Intent(CadastroForm.this, TecnicoHomeForm.class);
+                                            break;
+                                        case "admin":
+                                            intent = new Intent(CadastroForm.this, AdminHomeForm.class);
+                                            break;
+                                        default:
+                                            Toast.makeText(CadastroForm.this, "Tipo de usuário desconhecido", Toast.LENGTH_SHORT).show();
+                                            return;
+                                    }
+
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    Toast.makeText(CadastroForm.this, "Erro no login automático: " + responseLogin.code(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Usuario> call, Throwable t) {
+                                Toast.makeText(CadastroForm.this, "Falha no login automático: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+
                     } else {
                         Toast.makeText(CadastroForm.this, "Erro no cadastro: " + response.code(), Toast.LENGTH_SHORT).show();
                     }
@@ -155,7 +201,7 @@ public class CadastroForm extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<Usuario> call, Throwable t) {
-                    Toast.makeText(CadastroForm.this, "Falha na conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(CadastroForm.this, "Falha na conexão: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         });

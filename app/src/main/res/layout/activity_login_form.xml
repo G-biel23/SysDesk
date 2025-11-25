@@ -14,7 +14,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".LoginForm">
+    tools:context=".activity.LoginForm">
 
 <!--Logo-->
     <ImageView
@@ -74,6 +74,7 @@
 <!--Botão de Login-->
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/login_button"
+        android:layout_width="150dp"
         style="@style/Button"
         app:layout_constraintStart_toStartOf="@id/containerComponents"
         app:layout_constraintEnd_toEndOf="@id/containerComponents"

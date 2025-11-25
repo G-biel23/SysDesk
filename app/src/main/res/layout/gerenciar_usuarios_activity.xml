@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/off_white"
+    tools:context=".GerenciarUsuariosActivity">
+
+    <!-- LOGO -->
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="120dp"
+        android:src="@drawable/logo"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <!-- Ícone da Tela -->
+    <ImageView
+        android:id="@+id/iconUsers"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="40dp"
+        android:src="@drawable/ic_admin_users"
+        app:layout_constraintTop_toBottomOf="@id/logo"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <!-- Título -->
+    <TextView
+        android:id="@+id/tituloUsers"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:text="Gerenciar Usuários"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:textColor="@color/coral"
+        android:layout_marginStart="15dp"
+        android:paddingTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/logo"
+        app:layout_constraintStart_toEndOf="@id/iconUsers"/>
+
+    <!-- CONTAINER -->
+    <View
+        android:id="@+id/containerComponents"
+        style="@style/ContainerComponents"
+        android:layout_height="500dp"
+        app:layout_constraintTop_toBottomOf="@id/iconUsers"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Lista de Usuários -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerUsuarios"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="20dp"
+        app:layout_constraintTop_toTopOf="@id/containerComponents"
+        app:layout_constraintBottom_toTopOf="@+id/btnCriarUsuario"
+        app:layout_constraintStart_toStartOf="@id/containerComponents"
+        app:layout_constraintEnd_toEndOf="@id/containerComponents"/>
+
+    <!-- Botão Criar novo usuário -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnCriarUsuario"
+        android:layout_width="wrap_content"
+        style="@style/Button"
+        android:text="Criar Usuário"
+        android:paddingHorizontal="12dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintTop_toBottomOf="@id/recyclerUsuarios"
+        app:layout_constraintBottom_toBottomOf="@id/containerComponents"
+        app:layout_constraintStart_toStartOf="@id/containerComponents"
+        app:layout_constraintEnd_toEndOf="@id/containerComponents"/>
+
+    <!-- Navbar -->
+    <FrameLayout
+        android:id="@+id/navbarContainer"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <include
+            layout="@layout/custom_bottom_nav"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

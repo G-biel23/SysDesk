@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_dialog_round">
+
+    <TextView
+        android:id="@+id/txtTituloDialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Funcionalidade em Desenvolvimento"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:textColor="#222" />
+
+    <TextView
+        android:id="@+id/txtMensagemDialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Esta funcionalidade estará disponível em breve."
+        android:textSize="15sp"
+        android:textColor="#444" />
+
+   <androidx.appcompat.widget.AppCompatButton
+        style="@style/Button"
+        android:id="@+id/btnDialogOk"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:text="Entendi"
+        android:textAllCaps="false"
+        android:backgroundTint="@color/azul_vibrante"
+        android:textColor="#FFF"
+        android:padding="10dp" />
+
+</LinearLayout>

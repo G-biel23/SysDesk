@@ -66,7 +66,6 @@ public interface SysDeskApi {
     @DELETE("usuarios/{id}")
     Call<Void> deletarUsuario(@Path("id") int id);
 
-    @Headers("Content-Type: application/json")
     @POST("/usuarios/login")
     Call<Usuario> login(@Body Usuario usuario);
 

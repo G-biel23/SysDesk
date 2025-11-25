@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="400dp"
+    android:height="100dp"
+    android:viewportWidth="400"
+    android:viewportHeight="100">
+
+    <!-- Fundo arredondado -->
+    <path
+        android:fillColor="@color/off_white"
+        android:pathData="
+            M20,0
+            H380
+            A20,20 0 0 1 400,20
+            V80
+            A20,20 0 0 1 380,100
+            H20
+            A20,20 0 0 1 0,80
+            V20
+            A20,20 0 0 1 20,0
+            Z" />
+
+    <!-- Curva central para o FAB -->
+    <path
+        android:fillColor="@color/off_white"
+        android:pathData="
+            M140,0
+            C160,55 240,55 260,0
+            Z" />
+
+</vector>
