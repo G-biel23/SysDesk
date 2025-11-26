@@ -47,7 +47,12 @@ public interface SysDeskApi {
     Call<Chamado> atualizarChamado(@Path("id") int id, @Body Chamado chamado);
 
     @DELETE("chamados/{id}")
-    Call<Void> deletarChamado(@Path("id") int id);
+    Call<Void> excluirChamado(@Path("id") int id);
+
+    // Listar chamados abertos de um usuário
+    @GET("chamados/usuario/{idUsuario}/abertos")
+    Call<List<Chamado>> getChamadosAbertosDoUsuario(@Path("idUsuario") int idUsuario);
+
 
     // === USUÁRIOS ===
     @GET("usuarios")

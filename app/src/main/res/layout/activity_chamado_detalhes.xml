@@ -1,0 +1,87 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/txtTituloDetalhes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Título"
+        android:textColor="@color/black"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/txtDescricaoDetalhes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Descrição do chamado"
+        android:layout_marginTop="16dp"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toBottomOf="@id/txtTituloDetalhes"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/txtStatusDetalhes"/>
+
+    <TextView
+        android:id="@+id/txtStatusDetalhes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Status"
+        android:textStyle="italic"
+        android:textColor="@color/black"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/txtDescricaoDetalhes"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/txtCategoriaDetalhes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Categoria"
+        android:textColor="@color/black"
+        android:textStyle="italic"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/txtStatusDetalhes"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnEditarChamado"
+        style="@style/Button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Editar"
+        android:textSize="15dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="10dp"
+        android:backgroundTint="@color/azul_vibrante"
+        app:layout_constraintTop_toBottomOf="@id/txtCategoriaDetalhes"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btnExcluirChamado"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnExcluirChamado"
+        style="@style/Button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Excluir"
+        android:textSize="15dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="10dp"
+        android:backgroundTint="@color/Red"
+        app:layout_constraintTop_toBottomOf="@id/txtCategoriaDetalhes"
+        app:layout_constraintStart_toEndOf="@id/btnEditarChamado"
+        app:layout_constraintEnd_toEndOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

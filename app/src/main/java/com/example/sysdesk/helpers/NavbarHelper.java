@@ -10,6 +10,8 @@ import android.widget.Button;
 
 import com.example.sysdesk.R;
 import com.example.sysdesk.activity.ClienteHomeForm;
+import com.example.sysdesk.activity.LoginForm;
+import com.example.sysdesk.network.RetrofitClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class NavbarHelper {
@@ -29,56 +31,19 @@ public class NavbarHelper {
         // ---------------- CHAT (EM DESENVOLVIMENTO) ----------------
         View btnChat = activity.findViewById(R.id.btnChat);
         if (btnChat != null) {
-            btnChat.setOnClickListener(v -> {
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_em_desenvolvimento, null);
-                builder.setView(dialogView);
-
-                AlertDialog dialog = builder.create();
-                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
-                Button btnOk = dialogView.findViewById(R.id.btnDialogOk);
-                btnOk.setOnClickListener(view -> dialog.dismiss());
-
-                dialog.show();
-            });
+            btnChat.setOnClickListener(v -> mostrarDialogoEmDesenvolvimento(activity));
         }
 
-        // ---------------- NOTIFICAÇÕES ----------------
+        // ---------------- NOTIFICAÇÕES (EM DESENVOLVIMENTO) ----------------
         View btnNotificacoes = activity.findViewById(R.id.btnNotificacoes);
         if (btnNotificacoes != null) {
-            btnNotificacoes.setOnClickListener(v -> {
-                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_em_desenvolvimento, null);
-                builder.setView(dialogView);
-
-                AlertDialog dialog = builder.create();
-                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
-                Button btnOk = dialogView.findViewById(R.id.btnDialogOk);
-                btnOk.setOnClickListener(view -> dialog.dismiss());
-
-                dialog.show();
-            });
+            btnNotificacoes.setOnClickListener(v -> mostrarDialogoEmDesenvolvimento(activity));
         }
 
-        // ---------------- CONFIGURAÇÕES ----------------
-        View btnConfig = activity.findViewById(R.id.btnConfig);
-        if (btnConfig != null) {
-            btnConfig.setOnClickListener(v -> {
-                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_em_desenvolvimento, null);
-                builder.setView(dialogView);
-
-                AlertDialog dialog = builder.create();
-                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
-                Button btnOk = dialogView.findViewById(R.id.btnDialogOk);
-                btnOk.setOnClickListener(view -> dialog.dismiss());
-
-                dialog.show();
-            });
+        // ---------------- LOGOUT ----------------
+        View btnLogout = activity.findViewById(R.id.btnConfig);
+        if (btnLogout != null) {
+            btnLogout.setOnClickListener(v -> realizarLogout(activity));
         }
 
         // ---------------- FAB - ANIMAÇÃO + EVENTO ----------------
@@ -100,11 +65,44 @@ public class NavbarHelper {
                 return false;
             });
 
-            // Abrir tela definida no parâmetro
+            // Abrir tela definida
             fab.setOnClickListener(v -> {
                 Intent intent = new Intent(activity, telaDoFab);
                 activity.startActivity(intent);
             });
         }
+    }
+
+    private static void mostrarDialogoEmDesenvolvimento(Activity activity) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_em_desenvolvimento, null);
+        builder.setView(dialogView);
+
+        AlertDialog dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+        Button btnOk = dialogView.findViewById(R.id.btnDialogOk);
+        btnOk.setOnClickListener(view -> dialog.dismiss());
+
+        dialog.show();
+    }
+
+    private static void realizarLogout(Activity activity) {
+
+        // Remover token do Retrofit
+        RetrofitClient.clearToken();
+
+        // Limpar SharedPreferences
+        activity.getSharedPreferences("sysdesk_prefs", Activity.MODE_PRIVATE)
+                .edit()
+                .clear()
+                .apply();
+
+        // Redirecionar para login
+        Intent intent = new Intent(activity, LoginForm.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        activity.startActivity(intent);
+
+        activity.finish();
     }
 }

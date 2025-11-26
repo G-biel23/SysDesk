@@ -1,9 +1,9 @@
 package com.example.sysdesk.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -16,13 +16,14 @@ import com.example.sysdesk.R;
 import com.example.sysdesk.api.SysDeskApi;
 import com.example.sysdesk.model.Categoria;
 import com.example.sysdesk.model.Chamado;
+import com.example.sysdesk.model.Usuario;
 import com.example.sysdesk.network.RetrofitClient;
+import com.example.sysdesk.event.ChamadoAtualizadoEvent;
 
-import java.text.SimpleDateFormat;
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,16 +31,20 @@ import retrofit2.Response;
 
 public class AbrirChamadoForm extends AppCompatActivity {
 
-    private EditText editTitulo;
-    private EditText editDescricao;
+    private EditText editTitulo, editDescricao, editOutraCategoria;
     private Spinner spinnerCategoria;
-    private EditText editOutraCategoria;
     private View btnEnviar;
-
     private SysDeskApi api;
     private List<Categoria> categorias = new ArrayList<>();
     private ArrayAdapter<String> spinnerAdapter;
     private final String OPCAO_OUTRA = "Outra";
+    private Chamado chamadoEditar = null;
+
+    public static void abrirParaEdicao(Context ctx, Chamado chamado) {
+        Intent intent = new Intent(ctx, AbrirChamadoForm.class);
+        intent.putExtra("CHAMADO_EDITAR", chamado);
+        ctx.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,25 +53,25 @@ public class AbrirChamadoForm extends AppCompatActivity {
 
         editTitulo = findViewById(R.id.editTitulo);
         editDescricao = findViewById(R.id.editDescricao);
-        spinnerCategoria = findViewById(R.id.spinnerCategoria);
         editOutraCategoria = findViewById(R.id.editOutraCategoria);
+        spinnerCategoria = findViewById(R.id.spinnerCategoria);
         btnEnviar = findViewById(R.id.btnEnviarChamado);
 
-        // Recupera token salvo e configura Retrofit
-        String token = getSharedPreferences("sysdesk_prefs", MODE_PRIVATE)
-                .getString("TOKEN", null);
-        if (token != null) {
-            RetrofitClient.setToken(token);
-        }
-
+        String token = getSharedPreferences("sysdesk_prefs", MODE_PRIVATE).getString("TOKEN", null);
+        if (token != null) RetrofitClient.setToken(token);
         api = RetrofitClient.getRetrofitInstance().create(SysDeskApi.class);
 
         setupSpinner();
         carregarCategorias();
 
-        btnEnviar.setOnClickListener(v -> enviarChamado());
+        // Verifica se é edição
+        chamadoEditar = (Chamado) getIntent().getSerializableExtra("CHAMADO_EDITAR");
+        if(chamadoEditar != null){
+            editTitulo.setText(chamadoEditar.getTitulo());
+            editDescricao.setText(chamadoEditar.getDescricao());
+        }
 
-        com.example.sysdesk.helpers.NavbarHelper.configurarNavbar(this, AbrirChamadoForm.class);
+        btnEnviar.setOnClickListener(v -> enviarChamado());
     }
 
     private void setupSpinner() {
@@ -74,19 +79,14 @@ public class AbrirChamadoForm extends AppCompatActivity {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategoria.setAdapter(spinnerAdapter);
 
-        spinnerCategoria.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerCategoria.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String sel = spinnerAdapter.getItem(position);
-                if (OPCAO_OUTRA.equals(sel)) {
-                    editOutraCategoria.setVisibility(View.VISIBLE);
-                } else {
-                    editOutraCategoria.setVisibility(View.GONE);
-                }
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                editOutraCategoria.setVisibility(OPCAO_OUTRA.equals(spinnerAdapter.getItem(position)) ? View.VISIBLE : View.GONE);
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {
                 editOutraCategoria.setVisibility(View.GONE);
             }
         });
@@ -101,14 +101,7 @@ public class AbrirChamadoForm extends AppCompatActivity {
                     categorias.addAll(response.body());
                     atualizarSpinner();
                 } else {
-                    Toast.makeText(AbrirChamadoForm.this, "Erro: " + response.code(), Toast.LENGTH_SHORT).show();
-                    Log.e("API", "Erro ao carregar categorias. Código: " + response.code());
-                    try {
-                        if (response.errorBody() != null)
-                            Log.e("API", "Erro body: " + response.errorBody().string());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    Toast.makeText(AbrirChamadoForm.this, "Erro ao carregar categorias", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -123,6 +116,7 @@ public class AbrirChamadoForm extends AppCompatActivity {
         List<String> nomes = new ArrayList<>();
         for (Categoria c : categorias) nomes.add(c.getNome());
         nomes.add(OPCAO_OUTRA);
+
         spinnerAdapter.clear();
         spinnerAdapter.addAll(nomes);
         spinnerAdapter.notifyDataSetChanged();
@@ -133,29 +127,14 @@ public class AbrirChamadoForm extends AppCompatActivity {
         String descricao = editDescricao.getText().toString().trim();
         String categoriaSelecionada = (String) spinnerCategoria.getSelectedItem();
 
-        if (titulo.isEmpty()) {
-            editTitulo.setError("Informe o título");
-            editTitulo.requestFocus();
-            return;
-        }
-        if (descricao.isEmpty()) {
-            editDescricao.setError("Informe a descrição");
-            editDescricao.requestFocus();
-            return;
-        }
-        if (categoriaSelecionada == null) {
-            Toast.makeText(this, "Selecione uma categoria", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        if (titulo.isEmpty()) { editTitulo.setError("Informe o título"); return; }
+        if (descricao.isEmpty()) { editDescricao.setError("Informe a descrição"); return; }
+        if (categoriaSelecionada == null) { Toast.makeText(this, "Selecione uma categoria", Toast.LENGTH_SHORT).show(); return; }
 
         if (OPCAO_OUTRA.equals(categoriaSelecionada)) {
-            String novaCat = editOutraCategoria.getText().toString().trim();
-            if (novaCat.isEmpty()) {
-                editOutraCategoria.setError("Digite a nova categoria");
-                editOutraCategoria.requestFocus();
-                return;
-            }
-            criarCategoriaECriarChamado(novaCat, titulo, descricao);
+            String nova = editOutraCategoria.getText().toString().trim();
+            if (nova.isEmpty()) { editOutraCategoria.setError("Informe a nova categoria"); return; }
+            criarCategoriaECriarChamado(nova, titulo, descricao);
         } else {
             int idCategoria = encontrarIdCategoriaPorNome(categoriaSelecionada);
             criarChamadoNoBackend(idCategoria, titulo, descricao);
@@ -163,9 +142,7 @@ public class AbrirChamadoForm extends AppCompatActivity {
     }
 
     private int encontrarIdCategoriaPorNome(String nome) {
-        for (Categoria c : categorias) {
-            if (nome.equals(c.getNome())) return c.getId();
-        }
+        for (Categoria c : categorias) if (nome.equals(c.getNome())) return c.getId();
         return 0;
     }
 
@@ -182,7 +159,7 @@ public class AbrirChamadoForm extends AppCompatActivity {
                     atualizarSpinner();
                     criarChamadoNoBackend(criada.getId(), titulo, descricao);
                 } else {
-                    Toast.makeText(AbrirChamadoForm.this, "Erro ao criar categoria:" + response.code(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AbrirChamadoForm.this, "Erro ao criar categoria", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -194,23 +171,33 @@ public class AbrirChamadoForm extends AppCompatActivity {
     }
 
     private void criarChamadoNoBackend(int idCategoria, String titulo, String descricao) {
-        Chamado chamado = new Chamado();
+
+        int userId = getSharedPreferences("sysdesk_prefs", MODE_PRIVATE).getInt("USER_ID", 1);
+
+        Usuario usuario = new Usuario();
+        usuario.setId(userId);
+
+        Categoria categoria = new Categoria();
+        categoria.setId(idCategoria);
+
+        Chamado chamado = chamadoEditar != null ? chamadoEditar : new Chamado();
         chamado.setTitulo(titulo);
         chamado.setDescricao(descricao);
-        chamado.setId_categoria(idCategoria);
-        chamado.setId_tecnico(0);
         chamado.setStatus("ABERTO");
-        chamado.setData_abertura(getDataAtualIso());
-        chamado.setId_usuario(0);
+        chamado.setUsuario(usuario);
+        chamado.setTecnico(null);
+        chamado.setCategoria(categoria);
 
         api.criarChamado(chamado).enqueue(new Callback<Chamado>() {
             @Override
             public void onResponse(@NonNull Call<Chamado> call, @NonNull Response<Chamado> response) {
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() && response.body() != null) {
                     Toast.makeText(AbrirChamadoForm.this, "Chamado enviado com sucesso", Toast.LENGTH_SHORT).show();
+                    // 🔹 Evento para atualizar dashboard
+                    EventBus.getDefault().post(new ChamadoAtualizadoEvent(response.body()));
                     finish();
                 } else {
-                    Toast.makeText(AbrirChamadoForm.this, "Erro ao enviar chamado:" + response.code(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AbrirChamadoForm.this, "Erro ao enviar chamado", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -219,10 +206,5 @@ public class AbrirChamadoForm extends AppCompatActivity {
                 Toast.makeText(AbrirChamadoForm.this, "Falha: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    private String getDataAtualIso() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
-        return sdf.format(new Date());
     }
 }

@@ -92,7 +92,7 @@
                 android:layout_marginTop="4dp"/>
         </LinearLayout>
 
-        <!-- Configurações -->
+        <!-- Logout -->
         <LinearLayout
             android:id="@+id/btnConfig"
             android:layout_width="0dp"
@@ -102,12 +102,12 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:src="@drawable/ic_settings"
+                android:src="@drawable/baseline_logout_24"
                 android:layout_width="24dp"
                 android:layout_height="24dp" />
 
             <TextView
-                android:text="Configurações"
+                android:text="Sair"
                 android:textSize="12sp"
                 android:textColor="@color/black"
                 android:layout_width="wrap_content"

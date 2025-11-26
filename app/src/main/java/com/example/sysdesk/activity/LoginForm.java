@@ -1,11 +1,12 @@
 package com.example.sysdesk.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.util.Base64;
-import android.view.MotionEvent;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -60,22 +61,6 @@ public class LoginForm extends AppCompatActivity {
             }
         };
         etSenha.setFilters(new InputFilter[]{senhaFilter, new InputFilter.LengthFilter(25)});
-
-        etSenha.setOnTouchListener((v, event) -> {
-            final int DRAWABLE_RIGHT = 2;
-            if(event.getAction() == MotionEvent.ACTION_UP) {
-                if(event.getRawX() >= (etSenha.getRight() - etSenha.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                    if(etSenha.getInputType() == (android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
-                        etSenha.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-                    } else {
-                        etSenha.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                    }
-                    etSenha.setSelection(etSenha.getText().length());
-                    return true;
-                }
-            }
-            return false;
-        });
     }
 
     private void configurarEventos() {
@@ -112,28 +97,24 @@ public class LoginForm extends AppCompatActivity {
 
                     Usuario usuarioLogado = response.body();
 
-                    // ===============================
-                    //   GERAR E SALVAR BASIC TOKEN
-                    // ===============================
-
-                    // 1️⃣ Criar string email:senha
+                    // Criar Basic Token
                     String rawCredentials = usuarioLogin.getEmail() + ":" + usuarioLogin.getSenha();
-
-                    // 2️⃣ Converter para Base64
                     String basicToken = Base64.encodeToString(rawCredentials.getBytes(), Base64.NO_WRAP);
-
-                    // 3️⃣ Salvar no Retrofit (para todas as requisições futuras)
                     RetrofitClient.setToken(basicToken);
 
-                    // 4️⃣ Salvar localmente (SharedPreferences) para manter login
-                    getSharedPreferences("sysdesk_prefs", MODE_PRIVATE)
-                            .edit()
-                            .putString("TOKEN", basicToken)
-                            .apply();
+                    // Salvar SharedPreferences
+                    SharedPreferences prefs = getSharedPreferences("sysdesk_prefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putInt("USER_ID", usuarioLogado.getId());
+                    editor.putString("NOME_USUARIO", usuarioLogado.getNome());
+                    editor.putString("TOKEN", basicToken);
+                    editor.commit(); // garante que esteja disponível antes de abrir dashboard
+
+                    Log.d("DEBUG_LOGIN", "ID Usuário salvo: " + usuarioLogado.getId());
 
                     Toast.makeText(LoginForm.this, "Bem-vindo, " + usuarioLogado.getNome(), Toast.LENGTH_SHORT).show();
 
-                    // Redirecionamento para tela correta
+                    // Abrir a Activity correta
                     redirecionarPorTipo(usuarioLogado.getTipo());
 
                 } else if (response.code() == 401) {
@@ -149,7 +130,6 @@ public class LoginForm extends AppCompatActivity {
             }
         });
     }
-
 
     private void redirecionarPorTipo(String tipo) {
         Intent intent;

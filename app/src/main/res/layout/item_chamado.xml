@@ -1,51 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    app:cardElevation="4dp"
+    android:layout_margin="8dp"
     app:cardCornerRadius="12dp"
-    android:padding="12dp">
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@color/white">
 
 
     <LinearLayout
+        android:orientation="vertical"
+        android:padding="12dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/txtTitulo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Título do Chamado"
+            android:text="Título do chamado"
+            android:textColor="@color/azul_vibrante"
             android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#000000" />
-
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/txtDescricao"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Descrição resumida..."
+            android:text="Descrição do chamado"
+            android:textColor="@color/dark_grey"
             android:textSize="14sp"
-            android:layout_marginTop="4dp"
-            android:textColor="#444444" />
-
+            android:layout_marginTop="4dp"/>
 
         <TextView
             android:id="@+id/txtStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Aberto"
-            android:layout_marginTop="6dp"
-            android:textStyle="bold"
-            android:textSize="14sp" />
-
-
+            android:text="Status"
+            android:textColor="@color/coral"
+            android:textSize="12sp"
+            android:layout_marginTop="4dp"/>
     </LinearLayout>
-
-
 </androidx.cardview.widget.CardView>

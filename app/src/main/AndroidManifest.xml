@@ -58,6 +58,11 @@
             android:name=".activity.AbrirChamadoForm"
             android:exported="true" />
 
+        <!-- Tela de Detalhes do Chamado -->
+        <activity
+            android:name=".activity.ChamadoDetalhesActivity"
+            android:exported="true" />
+
 
     </application>
 
