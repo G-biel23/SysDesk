@@ -2,6 +2,7 @@ package com.example.sysdesk.api;
 
 import com.example.sysdesk.model.Categoria;
 import com.example.sysdesk.model.Chamado;
+import com.example.sysdesk.model.Sugestao;
 import com.example.sysdesk.model.Usuario;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.DELETE;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface SysDeskApi {
 
@@ -53,6 +55,10 @@ public interface SysDeskApi {
     @GET("chamados/usuario/{idUsuario}/abertos")
     Call<List<Chamado>> getChamadosAbertosDoUsuario(@Path("idUsuario") int idUsuario);
 
+    @GET("chamados/abertos")
+    Call<List<Chamado>> getChamadosAbertos();
+
+
 
     // === USUÁRIOS ===
     @GET("usuarios")
@@ -74,4 +80,35 @@ public interface SysDeskApi {
     @POST("/usuarios/login")
     Call<Usuario> login(@Body Usuario usuario);
 
+    // Aceitar chamado
+    @PUT("/chamados/{id}/aceitar")
+    Call<Chamado> aceitarChamado(@Path("id") Integer chamadoId, @Body Usuario tecnico);
+
+    // Enviar sugestão
+    @POST("/chamados/{id}/sugestoes")
+    Call<Sugestao> sugerirSolucao(@Path("id") int chamadoId, @Body Sugestao sugestao);
+
+    // Buscar todas sugestões de um chamado
+    @GET("/chamados/{id}/sugestoes")
+    Call<List<Sugestao>> getSugestoes(@Path("id") int chamadoId);
+
+    @GET("chamados/tecnico/{id}")
+    Call<List<Chamado>> getChamadosPorTecnico(@Path("id") int tecnicoId);
+
+    @GET("chamados/tecnico/{id}/status/{status}")
+    Call<List<Chamado>> getChamadosPorTecnicoEStatus(
+            @Path("id") int tecnicoId,
+            @Path("status") String status
+    );
+
+    // Fechar chamado
+    @PUT("chamados/{id}/fechar")
+    Call<Chamado> fecharChamado(@Path("id") int id);
+
+    @GET("chamados/disponiveis")
+    Call<List<Chamado>> getChamadosDisponiveis();
+
+
+
 }
+

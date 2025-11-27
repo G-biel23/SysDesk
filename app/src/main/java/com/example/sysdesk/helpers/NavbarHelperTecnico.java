@@ -9,12 +9,13 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 
 import com.example.sysdesk.R;
-import com.example.sysdesk.activity.ClienteHomeForm;
 import com.example.sysdesk.activity.LoginForm;
+import com.example.sysdesk.activity.TecnicoChamadosDisponiveisForm;
+import com.example.sysdesk.activity.TecnicoMeusChamadosForm;
 import com.example.sysdesk.network.RetrofitClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class NavbarHelper {
+public class NavbarHelperTecnico {
 
     public static void configurarNavbar(Activity activity, Class<?> telaDoFab) {
 
@@ -22,7 +23,17 @@ public class NavbarHelper {
         View btnHistorico = activity.findViewById(R.id.btnHistorico);
         if (btnHistorico != null) {
             btnHistorico.setOnClickListener(v -> {
-                Intent i = new Intent(activity, ClienteHomeForm.class);
+                Intent i = new Intent(activity, TecnicoChamadosDisponiveisForm.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                activity.startActivity(i);
+            });
+        }
+
+        // ---------------- Tickets ----------------
+        View btnTicket = activity.findViewById(R.id.btnTicket);
+        if (btnTicket != null) {
+            btnTicket.setOnClickListener(v -> {
+                Intent i = new Intent(activity, TecnicoMeusChamadosForm.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 activity.startActivity(i);
             });
@@ -46,31 +57,7 @@ public class NavbarHelper {
             btnLogout.setOnClickListener(v -> realizarLogout(activity));
         }
 
-        // ---------------- FAB - ANIMAÇÃO + EVENTO ----------------
-        FloatingActionButton fab = activity.findViewById(R.id.btnAbrirChamado);
 
-        if (fab != null) {
-
-            // Animação ao pressionar
-            fab.setOnTouchListener((v, event) -> {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        v.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.fab_click_down));
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_CANCEL:
-                        v.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.fab_click_up));
-                        break;
-                }
-                return false;
-            });
-
-            // Abrir tela definida
-            fab.setOnClickListener(v -> {
-                Intent intent = new Intent(activity, telaDoFab);
-                activity.startActivity(intent);
-            });
-        }
     }
 
     private static void mostrarDialogoEmDesenvolvimento(Activity activity) {

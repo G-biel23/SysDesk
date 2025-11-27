@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sysdesk.R;
 import com.example.sysdesk.api.SysDeskApi;
+import com.example.sysdesk.helpers.NavbarHelper;
 import com.example.sysdesk.model.Categoria;
 import com.example.sysdesk.model.Chamado;
 import com.example.sysdesk.model.Usuario;
@@ -51,14 +52,15 @@ public class AbrirChamadoForm extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_abrir_chamado);
 
+        NavbarHelper.configurarNavbar(this, AbrirChamadoForm.class);
+
         editTitulo = findViewById(R.id.editTitulo);
         editDescricao = findViewById(R.id.editDescricao);
         editOutraCategoria = findViewById(R.id.editOutraCategoria);
         spinnerCategoria = findViewById(R.id.spinnerCategoria);
         btnEnviar = findViewById(R.id.btnEnviarChamado);
 
-        String token = getSharedPreferences("sysdesk_prefs", MODE_PRIVATE).getString("TOKEN", null);
-        if (token != null) RetrofitClient.setToken(token);
+
         api = RetrofitClient.getRetrofitInstance().create(SysDeskApi.class);
 
         setupSpinner();
@@ -73,6 +75,7 @@ public class AbrirChamadoForm extends AppCompatActivity {
 
         btnEnviar.setOnClickListener(v -> enviarChamado());
     }
+
 
     private void setupSpinner() {
         spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, new ArrayList<>());

@@ -171,7 +171,7 @@ public class CadastroForm extends AppCompatActivity {
                                             intent = new Intent(CadastroForm.this, ClienteHomeForm.class);
                                             break;
                                         case "tecnico":
-                                            intent = new Intent(CadastroForm.this, TecnicoHomeForm.class);
+                                            intent = new Intent(CadastroForm.this, TecnicoMeusChamadosForm.class);
                                             break;
                                         case "admin":
                                             intent = new Intent(CadastroForm.this, AdminHomeForm.class);

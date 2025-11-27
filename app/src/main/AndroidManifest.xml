@@ -63,6 +63,29 @@
             android:name=".activity.ChamadoDetalhesActivity"
             android:exported="true" />
 
+        <!-- Tela de Detalhes do Chamado Técnico -->
+        <activity
+            android:name=".activity.TecnicoDetalhesForm"
+            android:exported="true"
+            />
+
+        <!-- Tela de Detalhes dos Chamados Disponíveis -->
+        <activity
+            android:name=".activity.TecnicoChamadosDisponiveisForm"
+            android:exported="true"
+            />
+
+        <!-- Tela de Detalhes dos Chamados do Técnico -->
+        <activity
+            android:name=".activity.TecnicoMeusChamadosForm"
+            android:exported="true"
+            />
+
+        <!-- Tela de Sugerir Solução -->
+        <activity
+            android:name=".activity.SugerirSolucaoForm"
+            android:exported="true" />
+
 
     </application>
 

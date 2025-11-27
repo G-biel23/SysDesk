@@ -41,7 +41,7 @@ public class ClienteHomeForm extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cliente_home_form);
+        setContentView(R.layout.activity_cliente_home);
 
         // ==========================
         // PEGAR ID DO USUÁRIO LOGADO
@@ -115,7 +115,7 @@ public class ClienteHomeForm extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     adapter.setChamados(response.body());
                 } else {
-                    Toast.makeText(ClienteHomeForm.this, "Erro ao carregar chamados", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ClienteHomeForm.this, "Erro ao carregar chamados" + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 

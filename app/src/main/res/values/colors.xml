@@ -9,5 +9,8 @@
     <color name="dark_purple">#2D1E70</color>
     <color name="light_coral">#ffc0b3</color>
     <color name="Red">#FF0000</color>
+    <color name="gray">#666666</color>
+    <color name="gray_ligth">#999999</color>
+
 
 </resources>

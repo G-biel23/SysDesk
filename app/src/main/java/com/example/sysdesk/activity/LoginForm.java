@@ -100,7 +100,6 @@ public class LoginForm extends AppCompatActivity {
                     // Criar Basic Token
                     String rawCredentials = usuarioLogin.getEmail() + ":" + usuarioLogin.getSenha();
                     String basicToken = Base64.encodeToString(rawCredentials.getBytes(), Base64.NO_WRAP);
-                    RetrofitClient.setToken(basicToken);
 
                     // Salvar SharedPreferences
                     SharedPreferences prefs = getSharedPreferences("sysdesk_prefs", MODE_PRIVATE);
@@ -138,7 +137,7 @@ public class LoginForm extends AppCompatActivity {
                 intent = new Intent(this, ClienteHomeForm.class);
                 break;
             case "tecnico":
-                intent = new Intent(this, TecnicoHomeForm.class);
+                intent = new Intent(this, TecnicoMeusChamadosForm.class);
                 break;
             case "admin":
                 intent = new Intent(this, AdminHomeForm.class);

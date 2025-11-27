@@ -4,13 +4,18 @@ import java.io.IOException;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
+import android.util.Base64;
 
 public class TokenInterceptor implements Interceptor {
 
     private volatile String token;
 
-    public void setToken(String token) {
-        this.token = token;
+    /**
+     * Define usuário e senha para Basic Auth
+     */
+    public void setToken(String username, String password) {
+        String userpass = username + ":" + password;
+        this.token = Base64.encodeToString(userpass.getBytes(), Base64.NO_WRAP);
     }
 
     public void clearToken() {
@@ -25,10 +30,10 @@ public class TokenInterceptor implements Interceptor {
             return chain.proceed(original);
         }
 
-        Request requestWithToken = original.newBuilder()
+        Request requestWithAuth = original.newBuilder()
                 .header("Authorization", "Basic " + token)
                 .build();
 
-        return chain.proceed(requestWithToken);
+        return chain.proceed(requestWithAuth);
     }
 }

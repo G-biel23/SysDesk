@@ -1,0 +1,65 @@
+package com.example.sysdesk.activity;
+
+import android.os.Bundle;
+import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.sysdesk.R;
+import com.example.sysdesk.adapter.SugestaoAdapter;
+import com.example.sysdesk.api.SysDeskApi;
+import com.example.sysdesk.model.Sugestao;
+import com.example.sysdesk.network.RetrofitClient;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class VisualizarSugestoesForm extends AppCompatActivity {
+
+    private RecyclerView recyclerSugestoes;
+    private SugestaoAdapter adapter;
+    private SysDeskApi api;
+    private int chamadoId;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_visualizar_sugestoes);
+
+        recyclerSugestoes = findViewById(R.id.recyclerSugestoes);
+        recyclerSugestoes.setLayoutManager(new LinearLayoutManager(this));
+
+        adapter = new SugestaoAdapter(null);
+        recyclerSugestoes.setAdapter(adapter);
+
+        chamadoId = getIntent().getIntExtra("CHAMADO_ID", -1);
+
+        api = RetrofitClient.getRetrofitInstance().create(SysDeskApi.class);
+
+        carregarSugestoes();
+    }
+
+    private void carregarSugestoes() {
+        api.getSugestoes(chamadoId).enqueue(new Callback<List<Sugestao>>() {
+            @Override
+            public void onResponse(Call<List<Sugestao>> call, Response<List<Sugestao>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    adapter.setSugestoes(response.body());
+                } else {
+                    Toast.makeText(VisualizarSugestoesForm.this, "Falha ao carregar sugestões", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Sugestao>> call, Throwable t) {
+                Toast.makeText(VisualizarSugestoesForm.this, "Erro de conexão", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+}
